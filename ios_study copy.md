@@ -46,3 +46,51 @@ SomeClass.h
 }
 @end 
 ```
+
+动态创建一个label
+```
+
+30
+down vote
+accepted
+Does the following work ?
+
+UIFont * customFont = [UIFont fontWithName:ProximaNovaSemibold size:12]; //custom font
+NSString * text = [self fromSender];
+
+CGSize labelSize = [text sizeWithFont:customFont constrainedToSize:CGSizeMake(380, 20) lineBreakMode:NSLineBreakByTruncatingTail];
+
+UILabel *fromLabel = [[UILabel alloc]initWithFrame:CGRectMake(91, 15, labelSize.width, labelSize.height)];
+fromLabel.text = text;
+fromLabel.font = customFont;
+fromLabel.numberOfLines = 1;
+fromLabel.baselineAdjustment = UIBaselineAdjustmentAlignBaselines; // or UIBaselineAdjustmentAlignCenters, or UIBaselineAdjustmentNone
+fromLabel.adjustsFontSizeToFitWidth = YES;
+fromLabel.adjustsLetterSpacingToFitWidth = YES;
+fromLabel.minimumScaleFactor = 10.0f/12.0f;
+fromLabel.clipsToBounds = YES;
+fromLabel.backgroundColor = [UIColor clearColor];
+fromLabel.textColor = [UIColor blackColor];
+fromLabel.textAlignment = NSTextAlignmentLeft;
+[collapsedViewContainer addSubview:fromLabel];
+edit : I believe you may encounter a problem using both adjustsFontSizeToFitWidth and minimumScaleFactor. The former states that you also needs to set a minimumFontWidth (otherwhise it may shrink to something quite unreadable according to my test), but this is deprecated and replaced by the later.
+
+edit 2 : Nevermind, outdated documentation. adjustsFontSizeToFitWidth needs minimumScaleFactor, just be sure no to pass it 0 as a minimumScaleFactor (integer division, 10/12 return 0). Small change on the baselineAdjustment value too.
+
+shareimprove this answer
+edited Jul 23 '13 at 15:04
+answered Jul 23 '13 at 14:49
+
+Nerkatel
+1,083720
+  	 	
+I would think it would, but using the above, the label doesn't even appear. – user1697845 Jul 23 '13 at 14:53
+  	 	
+Try commenting out adjutsFontSizeToFitWidth – Nerkatel Jul 23 '13 at 14:55
+  	 	
+Got it. Change MIN_SCALE_FACTOR to 10.0f/12.0f – Nerkatel Jul 23 '13 at 15:02
+  	 	
+still doesn't appear in the view. I tried commenting out all the "adjustsTo..." in my previous code, and I still have the same original issue. – user1697845 Jul 23 '13 at 15:03
+  	 	
+could you break after the addSubview and check that both objects exist and log their frame ? – Nerkatel Jul 23 '13 at 15:08 
+```
